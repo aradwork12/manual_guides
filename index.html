@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="he">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ExoTerra Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=IBM+Plex+Mono:wght@500&family=Rubik:wght@500;700&display=swap">
+<style>
+/* Layout: a field manual in one column. Each step pairs a few short lines with the real phone screens;
+   reference tables (FIX, LED, messages) follow. Hebrew and English share one layout, switched in place. */
+:root {
+  --bg: #eef3f0; --surface: #ffffff; --ink: #0f1714; --ink-2: #4b5a53; --line: rgba(15,23,20,.11);
+  --accent: #0f7a57; --accent-ink: #ffffff; --soft: #dfece5;
+  --good: #1d9b55; --warn: #b8770f; --bad: #c8363a; --neutral: #6c7a73; --on-status: #ffffff;
+  --phone: #121715; --phone-2: #1b221f; --phone-ink: #e8efeb; --phone-mint: #4fd1a5;
+  --f-display: "Rubik", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Assistant", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0c110f; --surface: #151c19; --ink: #e8efeb; --ink-2: #a3b2ab; --line: rgba(232,239,235,.11);
+  --accent: #4fd1a5; --accent-ink: #062016; --soft: #1b2823;
+  --good: #34c477; --warn: #f0b13e; --bad: #f06a6d; --neutral: #8a9a93; --on-status: #08110d; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0c110f; --surface: #151c19; --ink: #e8efeb; --ink-2: #a3b2ab; --line: rgba(232,239,235,.11);
+  --accent: #4fd1a5; --accent-ink: #062016; --soft: #1b2823;
+  --good: #34c477; --warn: #f0b13e; --bad: #f06a6d; --neutral: #8a9a93; --on-status: #08110d; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font: 17px/1.6 var(--f-body); }
+#app[data-lang="he"] .en, #app[data-lang="en"] .he { display: none !important; }
+.wrap { max-width: 1000px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar .wrap { display: flex; align-items: center; gap: 12px; padding-block: 10px; }
+.brand { font: 700 17px/1.2 var(--f-display); flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 10px; white-space: nowrap; overflow: hidden; }
+.brand small { font: 500 13px var(--f-mono); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; }
+.lang { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; background: var(--bg); }
+.lang button { font: 600 15px var(--f-body); border: 0; background: transparent; color: var(--ink-2); padding: 6px 14px; border-radius: 999px; cursor: pointer; min-height: 36px; }
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.lang button:focus-visible, summary:focus-visible, .demo button:focus-visible, .toc a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+header.hero { padding-block: 36px 8px; display: grid; gap: 12px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(32px, 6vw, 48px); font-weight: 700; }
+h2 { font-size: 26px; font-weight: 700; }
+h3 { font-size: 19px; font-weight: 500; }
+p { margin: 0; max-width: 62ch; }
+.lead { font-size: 19px; color: var(--ink-2); }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; padding-block: 8px 4px; }
+.toc a { text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; font-weight: 600; font-size: 15px; }
+.toc a:hover { border-color: var(--accent); }
+
+main { display: grid; gap: 22px; padding-block: 18px 40px; }
+section.block { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px; display: grid; gap: 16px; scroll-margin-top: 70px; }
+.step-head { display: flex; align-items: center; gap: 12px; }
+.num { flex: none; width: 38px; height: 38px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font: 700 19px var(--f-display); }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px; align-items: start; }
+@media (max-width: 760px) { .split { grid-template-columns: minmax(0, 1fr); } section.block { padding: 18px; } }
+ol.steps { margin: 0; padding-inline-start: 22px; display: grid; gap: 10px; }
+ol.steps li::marker { color: var(--accent); font-weight: 700; }
+ul.tips { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; color: var(--ink-2); }
+.col { display: grid; gap: 14px; min-width: 0; }
+.ui { font-weight: 700; color: var(--ink); background: var(--soft); padding: 0 6px; border-radius: 6px; white-space: nowrap; }
+.shots { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+figure.shot { margin: 0; width: clamp(150px, 38vw, 230px); display: grid; gap: 6px; }
+figure.shot img { width: 100%; height: auto; aspect-ratio: 600 / 1169; border-radius: 22px; border: 6px solid var(--phone); background: var(--phone); box-shadow: 0 8px 24px rgba(0,0,0,.18); display: block; }
+figure.shot figcaption { font-size: 14px; color: var(--ink-2); text-align: center; }
+
+details.more { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+details.more summary { cursor: pointer; padding: 10px 14px; font-weight: 700; color: var(--accent); list-style: none; display: flex; align-items: center; gap: 8px; min-height: 44px; }
+details.more summary::-webkit-details-marker { display: none; }
+details.more summary::before { content: "+"; font: 700 18px var(--f-mono); width: 18px; text-align: center; }
+details.more[open] summary::before { content: "−"; }
+details.more .in { padding: 0 16px 14px; display: grid; gap: 8px; color: var(--ink-2); }
+
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 16px; }
+th, td { text-align: start; padding: 10px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
+tr:last-child td { border-bottom: 0; }
+.chip { display: inline-block; padding: 3px 12px; border-radius: 999px; font-weight: 700; font-size: 15px; white-space: nowrap; color: var(--on-status); }
+.c-bad { background: var(--bad); } .c-warn { background: var(--warn); } .c-good { background: var(--good); } .c-neutral { background: var(--neutral); }
+.banner { display: inline-block; padding: 5px 12px; border-radius: 6px; font-weight: 700; font-size: 15px; color: var(--on-status); }
+.acc { font-family: var(--f-mono); font-size: 15px; white-space: nowrap; }
+
+/* LED swatches: the box's single RGB LED */
+.led { display: inline-block; width: 22px; height: 22px; border-radius: 50%; vertical-align: middle; border: 2px solid var(--line); }
+.led.green { background: #22c55e; box-shadow: 0 0 10px #22c55e; } .led.red { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+.led.blue { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; } .led.white { background: #ffffff; box-shadow: 0 0 12px #ffffff; }
+.led.off { background: transparent; box-shadow: none; }
+.led.blink { animation: blink 0.5s steps(1) infinite; } .led.fast { animation: blink 0.16s steps(1) infinite; }
+.led.flash { animation: flash 2.4s infinite; }
+@keyframes blink { 50% { opacity: .12; } }
+@keyframes flash { 0%, 12% { opacity: 1; } 13%, 100% { opacity: .12; } }
+
+/* Animated demo: the rig (hammer, plate, geophone, box) beside the phone screen */
+.demo { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 18px; align-items: center; background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+@media (max-width: 640px) { .demo { grid-template-columns: minmax(0, 1fr); justify-items: center; } }
+.rig { width: 100%; max-width: 420px; height: auto; }
+.rig .ink { stroke: var(--ink); } .rig .ink2 { stroke: var(--ink-2); }
+.demo-side { display: grid; gap: 10px; justify-items: center; }
+.demo-note { font-size: 14px; color: var(--ink-2); text-align: center; }
+.demo button { font: 600 15px var(--f-body); border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 16px; min-height: 40px; cursor: pointer; }
+.mock { width: 200px; height: 380px; border-radius: 26px; background: var(--phone); border: 6px solid #2a322e; color: var(--phone-ink); overflow: hidden; position: relative; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+.mock .view { position: absolute; inset: 0; display: grid; grid-template-rows: auto auto 1fr; transition: opacity .3s; }
+.mock .cam { height: 150px; background: radial-gradient(circle at 50% 40%, #33403a, #0d1210); position: relative; }
+.mock .frame { position: absolute; inset: 30px 30px; border: 2px solid rgba(255,255,255,.85); border-radius: 12px; display: grid; place-items: center; transition: border-color .2s; }
+.mock .frame.ok { border-color: var(--phone-mint); box-shadow: 0 0 0 3px rgba(79,209,165,.35); }
+.mock .qr { width: 54px; height: 54px; opacity: 0; transform: scale(.7); transition: opacity .35s, transform .35s; }
+.mock .qr.on { opacity: 1; transform: none; }
+.mock .p { padding: 10px 12px; display: grid; gap: 6px; }
+.mock .prompt { font-weight: 700; font-size: 14px; line-height: 1.25; }
+.mock .msg { color: var(--phone-mint); font-weight: 600; min-height: 34px; line-height: 1.3; }
+.mock .btn { border: 1px solid #3b4641; border-radius: 10px; text-align: center; padding: 6px; color: var(--phone-mint); font-weight: 600; }
+.mock .count { display: grid; grid-template-columns: 1fr auto; padding: 12px 12px 4px; gap: 6px; align-items: center; }
+.mock .big { font: 700 74px/1 var(--f-display); color: var(--phone-mint); text-align: center; transition: transform .15s; }
+.mock .big.hit { transform: scale(1.18); }
+.mock .left { text-align: center; font-weight: 600; }
+.mock .side { display: grid; gap: 4px; font-size: 11px; }
+.mock .side b { display: block; font-size: 13px; color: var(--phone-ink); }
+.mock .side span { color: #9fb0a8; }
+.mock .rows { padding: 0 10px; display: grid; gap: 0; align-content: start; overflow: hidden; }
+.mock .row { display: grid; grid-template-columns: 28px 62px 1fr; gap: 4px; padding: 5px 2px; border-bottom: 1px solid #26302b; font-family: var(--f-mono); font-size: 11px; animation: rowin .3s; }
+.mock .row b { font-family: var(--f-display); font-size: 14px; }
+@keyframes rowin { from { opacity: 0; transform: translateY(-6px); } }
+.mock .ring { position: absolute; left: 50%; top: 70px; width: 120px; height: 120px; margin-left: -60px; border-radius: 50%; border: 4px solid var(--phone-mint); opacity: 0; pointer-events: none; }
+.mock .ring.go { animation: ring .7s ease-out; }
+@keyframes ring { from { opacity: .9; transform: scale(.4); } to { opacity: 0; transform: scale(1.4); } }
+.mock .bar2 { display: flex; justify-content: space-around; border-top: 1px solid #26302b; padding: 6px 0; font-size: 10px; color: #9fb0a8; }
+.mock .bar2 .on { color: var(--phone-mint); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .led.blink, .led.fast, .led.flash { animation: none; } .mock .row { animation: none; } }
+
+footer { color: var(--ink-2); font-size: 14px; padding-block: 8px 40px; }
+</style>
+<style>body { margin: 0; }</style>
+</head>
+<body>
+
+<div id="app" data-lang="he" dir="rtl" lang="he">
+<div class="bar"><div class="wrap">
+  <div class="brand"><span class="he">מדריך שטח ExoTerra</span><span class="en">ExoTerra field guide</span><small>Hammer Box v1</small></div>
+  <div class="lang" role="group" aria-label="Language / שפה">
+    <button type="button" id="btn-he" data-set="he" aria-pressed="true">עברית</button>
+    <button type="button" id="btn-en" data-set="en" aria-pressed="false">English</button>
+  </div>
+</div></div>
+
+<div class="wrap">
+<header class="hero">
+  <h1><span class="he">מדריך שטח: סקר ססמי עם פטיש</span><span class="en">Field guide: hammer seismic survey</span></h1>
+  <p class="lead he">כל מה שצוות צריך: התחברות למערכת, בדיקת RTK, מכות מול כל גיאופון, ושליחת הקבצים בסוף היום.</p>
+  <p class="lead en">Everything a crew needs: connect to the box, check RTK, hit at each geophone, and send the files at the end of the day.</p>
+  <nav class="toc" aria-label="Contents">
+    <a href="#connect"><span class="he">התחברות</span><span class="en">Connect</span></a>
+    <a href="#gnss"><span class="he">קליטה ו-RTK</span><span class="en">GNSS &amp; RTK</span></a>
+    <a href="#line"><span class="he">שורת הגיאופונים</span><span class="en">Geophone line</span></a>
+    <a href="#hammer"><span class="he">מכות פטיש</span><span class="en">Hammer hits</span></a>
+    <a href="#files"><span class="he">קבצים</span><span class="en">Files</span></a>
+    <a href="#led"><span class="he">לד החיווי</span><span class="en">Box LED</span></a>
+    <a href="#errors"><span class="he">הודעות ושגיאות</span><span class="en">Messages</span></a>
+    <a href="#prefs"><span class="he">הגדרות</span><span class="en">Settings</span></a>
+  </nav>
+</header>
+
+<main>
+
+<!-- 1. Connect -->
+<section class="block" id="connect">
+  <div class="step-head"><span class="num">1</span><h2><span class="he">הפעלה והתחברות למערכת</span><span class="en">Start and connect</span></h2></div>
+  <div class="split">
+    <div class="col">
+      <ol class="steps he">
+        <li>הדלק את המערכת וחכה שלד החיווי יהבהב בירוק (יש לוויינים).</li>
+        <li>פתח את <b>ExoTerra</b> ואשר את ההרשאות: בלוטות׳, התראות ומיקום.</li>
+        <li>האפליקציה מוצאת את המערכת ומתחברת לבד. אם יש כמה מערכות בסביבה, הקש על שלך ברשימה (<span class="ui">HammerBox-XXXX</span>).</li>
+        <li>בלשונית <span class="ui">מערכת</span> מופיע <span class="chip c-good">מחובר</span> והמערכת מצפצפת.</li>
+      </ol>
+      <ol class="steps en">
+        <li>Turn on the box and wait for the LED to blink green (satellites in view).</li>
+        <li>Open <b>ExoTerra</b> and allow the permissions: Bluetooth, notifications and location.</li>
+        <li>The app finds the box and connects by itself. With several boxes nearby, tap yours in the list (<span class="ui">HammerBox-XXXX</span>).</li>
+        <li>The <span class="ui">System</span> tab shows <span class="chip c-good">Connected</span> and the box beeps.</li>
+      </ol>
+      <details class="more"><summary><span class="he">לא מתחבר?</span><span class="en">Not connecting?</span></summary>
+        <div class="in he">
+          <p>• הבלוטות׳ כבוי: האפליקציה תבקש להדליק אותו.</p>
+          <p>• המערכת מקבלת טלפון אחד בכל פעם. נתק קודם את הטלפון השני.</p>
+          <p>• התקרב למערכת והקש <span class="ui">סרוק שוב</span>.</p>
+          <p>• האפליקציה ממשיכה לעבוד ברקע (יש לה התראה קבועה). <span class="ui">עצור</span> בהתראה סוגר אותה.</p>
+          <p>• <span class="ui">איתור (צפצוף)</span> גורם למערכת לצפצף, כדי לזהות איזו מערכת מחוברת.</p>
+        </div>
+        <div class="in en">
+          <p>• Bluetooth is off: the app asks you to turn it on.</p>
+          <p>• The box accepts one phone at a time. Disconnect the other phone first.</p>
+          <p>• Move closer to the box and tap <span class="ui">Scan again</span>.</p>
+          <p>• The app keeps running in the background (it has a permanent notification). <span class="ui">Stop</span> in that notification closes it.</p>
+          <p>• <span class="ui">Locate (beep)</span> makes the box beep, to tell which box is connected.</p>
+        </div>
+      </details>
+    </div>
+    <div class="shots">
+      <figure class="shot he"><img src="img/he/connect.webp" alt="מסך בחירת מערכת" width="600" height="1169" loading="lazy"><figcaption>בחירת מערכת</figcaption></figure>
+      <figure class="shot he"><img src="img/he/system.webp" alt="לשונית מערכת: מחובר" width="600" height="1169" loading="lazy"><figcaption>מחובר</figcaption></figure>
+      <figure class="shot en"><img src="img/en/connect.webp" alt="Choose a system screen" width="600" height="1169" loading="lazy"><figcaption>Choose a system</figcaption></figure>
+      <figure class="shot en"><img src="img/en/system.webp" alt="System tab: Connected" width="600" height="1169" loading="lazy"><figcaption>Connected</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 2. GNSS -->
+<section class="block" id="gnss">
+  <div class="step-head"><span class="num">2</span><h2><span class="he">בדיקת קליטה ו-RTK</span><span class="en">Check GNSS and RTK</span></h2></div>
+  <div class="split">
+    <div class="col">
+      <p class="he">גלול למטה בלשונית <span class="ui">מערכת</span> לכרטיס <b>GNSS</b>. עובדים ב-<span class="chip c-good">RTK Fixed</span>: המיקום מדויק לכ-2 ס״מ.</p>
+      <p class="en">Scroll down the <span class="ui">System</span> tab to the <b>GNSS</b> card. Work at <span class="chip c-good">RTK Fixed</span>: positions are then accurate to about 2 cm.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th><span class="he">מצב</span><span class="en">State</span></th><th><span class="he">דיוק</span><span class="en">Accuracy</span></th><th><span class="he">מה לעשות</span><span class="en">What to do</span></th></tr></thead>
+        <tbody>
+          <tr><td><span class="chip c-bad"><span class="he">אין קליטה</span><span class="en">No fix</span></span></td><td class="acc">—</td>
+            <td><span class="he">צא לשטח פתוח, חכה כמה דקות.</span><span class="en">Move to open sky and wait a few minutes.</span></td></tr>
+          <tr><td><span class="chip c-neutral"><span class="he">קליטה 2D / 3D</span><span class="en">2D / 3D fix</span></span></td><td class="acc">~ 1–5 m</td>
+            <td><span class="he">ממתין לתיקוני RTK. בדוק ש-NTRIP מחובר.</span><span class="en">Waiting for RTK corrections. Check that NTRIP is connected.</span></td></tr>
+          <tr><td><span class="chip c-warn">RTK Float</span></td><td class="acc">~ 10–50 cm</td>
+            <td><span class="he">התיקונים מגיעים. חכה ל-Fixed.</span><span class="en">Corrections are arriving. Wait for Fixed.</span></td></tr>
+          <tr><td><span class="chip c-good">RTK Fixed</span></td><td class="acc">~ 1–2 cm</td>
+            <td><span class="he">מוכן לעבודה. לד החיווי במערכת ירוק קבוע.</span><span class="en">Ready to work. The box LED is steady green.</span></td></tr>
+        </tbody>
+      </table></div>
+      <details class="more"><summary><span class="he">תיקוני RTK (NTRIP)</span><span class="en">RTK corrections (NTRIP)</span></summary>
+        <div class="in he">
+          <p>התיקונים מגיעים מהאינטרנט דרך הטלפון. ב<span class="ui">הגדרות</span> ← NTRIP: הפעל <span class="ui">השתמש בתיקוני NTRIP</span> ומלא שרת, פורט, נקודת עיגון, משתמש וסיסמה מספק ה-RTK.</p>
+          <p>כשזה עובד, בכרטיס GNSS מופיע: NTRIP <span class="ui">מחובר · B/s</span>, <span class="ui">תיקונים דרך: טלפון (בלוטות׳)</span>, וגיל התיקונים של כמה שניות.</p>
+        </div>
+        <div class="in en">
+          <p>Corrections come from the internet through the phone. In <span class="ui">Settings</span> → NTRIP: turn on <span class="ui">Use NTRIP corrections</span> and fill the caster, port, mountpoint, user and password from your RTK provider.</p>
+          <p>When it works, the GNSS card shows NTRIP <span class="ui">Connected · B/s</span>, <span class="ui">Corrections via: Phone (Bluetooth)</span>, and a correction age of a few seconds.</p>
+        </div>
+      </details>
+      <details class="more"><summary><span class="he">הכרטיס "GNSS של הטלפון"</span><span class="en">The "Phone GNSS" card</span></summary>
+        <div class="in he"><p>גם מיקום ה-GPS של הטלפון נשמר ליד כל מכה וכל נקודה, להשוואה בלבד (דיוק של מטרים). צריך הרשאת מיקום מדויק.</p></div>
+        <div class="in en"><p>The phone's own GPS position is saved next to each hit and point, for comparison only (metre accuracy). It needs the precise-location permission.</p></div>
+      </details>
+    </div>
+    <div class="shots">
+      <figure class="shot he"><img src="img/he/gnss.webp" alt="כרטיס GNSS" width="600" height="1169" loading="lazy"><figcaption>כרטיס GNSS (בתוך מבנה: אין קליטה)</figcaption></figure>
+      <figure class="shot en"><img src="img/en/gnss.webp" alt="GNSS card" width="600" height="1169" loading="lazy"><figcaption>GNSS card (indoors: no fix)</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Geophone line -->
+<section class="block" id="line">
+  <div class="step-head"><span class="num">3</span><h2><span class="he">מדידת שורת הגיאופונים <small style="font-weight:500;color:var(--ink-2)">(לא חובה)</small></span><span class="en">Measure the geophone line <small style="font-weight:500;color:var(--ink-2)">(optional)</small></span></h2></div>
+  <div class="split">
+    <div class="col">
+      <p class="he">מעבר ראשון לאורך השורה, ששומר את המיקום של כל גיאופון.</p>
+      <p class="en">A first walk along the line that saves each geophone's position.</p>
+      <ol class="steps he">
+        <li>פתח את הלשונית <span class="ui">סריקה</span> והעמד את המערכת (האנטנה) ליד הגיאופון.</li>
+        <li>כוון את המצלמה ל-QR או לברקוד של הגיאופון. המצלמה נפתחת עם זום; אפשר לשנות בצביטה.</li>
+        <li>הקש <span class="ui">שמור נקודה</span>. עם <span class="ui">שמירה אוטומטית</span> כל קוד חדש נשמר לבד, רק ב-RTK Fixed.</li>
+      </ol>
+      <ol class="steps en">
+        <li>Open the <span class="ui">Scan</span> tab and stand the box (antenna) next to the geophone.</li>
+        <li>Point the camera at the geophone's QR code or barcode. The camera opens zoomed in; pinch to change it.</li>
+        <li>Tap <span class="ui">Save point</span>. With <span class="ui">Auto-save</span> on, every new code saves by itself, only at RTK Fixed.</li>
+      </ol>
+      <details class="more"><summary><span class="he">עוד</span><span class="en">More</span></summary>
+        <div class="in he">
+          <p>• סריקה חוזרת של אותו גיאופון מחליפה את הנקודה הקודמת שלו.</p>
+          <p>• לחיצה ארוכה על נקודה ברשימה מוחקת אותה.</p>
+          <p>• הקוד שנסרק נעלם מהמסך 5 שניות אחרי שיצא מהמצלמה.</p>
+          <p>• המצלמה לא קוראת את הקוד? לחיצה ארוכה על השורה שמתחת למצלמה, הקלד את המספר הסידורי והקש <span class="ui">שמור נקודה</span>.</p>
+        </div>
+        <div class="in en">
+          <p>• Scanning a geophone again replaces its previous point.</p>
+          <p>• Long-press a point in the list to delete it.</p>
+          <p>• The scanned code leaves the screen 5 s after it leaves the camera.</p>
+          <p>• Camera can't read the code? Long-press the line under the camera, type the serial and tap <span class="ui">Save point</span>.</p>
+        </div>
+      </details>
+    </div>
+    <div class="shots">
+      <figure class="shot he"><img src="img/he/scan.webp" alt="לשונית סריקה" width="600" height="1169" loading="lazy"><figcaption>לשונית סריקה</figcaption></figure>
+      <figure class="shot en"><img src="img/en/scan.webp" alt="Scan tab" width="600" height="1169" loading="lazy"><figcaption>Scan tab</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Hammer -->
+<section class="block" id="hammer">
+  <div class="step-head"><span class="num">4</span><h2><span class="he">מכות פטיש, גיאופון אחרי גיאופון</span><span class="en">Hammer hits, geophone by geophone</span></h2></div>
+  <div class="split">
+    <div class="col">
+      <ol class="steps he">
+        <li>הצמד את הפלטה לגיאופון.</li>
+        <li>בלשונית <span class="ui">מכות</span>, סרוק את ה-QR של הגיאופון. המיקום שלו נמדד מחדש והמערכת מתחילה ללכוד.</li>
+        <li>הכה עד שהספירה מגיעה ל-0 (ברירת מחדל: 3 מכות). בכל מכה טובה המערכת מצפצפת ומהבהבת בלבן, והמספר יורד.</li>
+        <li>ב-0 נשמע צליל סיום, הלכידה נעצרת והמסך חוזר לסריקה. עבור לגיאופון הבא.</li>
+      </ol>
+      <ol class="steps en">
+        <li>Put the plate next to the geophone.</li>
+        <li>In the <span class="ui">Hits</span> tab, scan the geophone's QR code. Its position is measured again and the box starts capturing.</li>
+        <li>Hit until the countdown reaches 0 (3 hits by default). On each good hit the box beeps and flashes white, and the number goes down.</li>
+        <li>At 0 the phone chimes, capture stops and the screen returns to scanning. Move to the next geophone.</li>
+      </ol>
+    </div>
+    <div class="shots">
+      <figure class="shot he"><img src="img/he/hits-scan.webp" alt="מכות: סריקת גיאופון" width="600" height="1169" loading="lazy"><figcaption>סריקת גיאופון</figcaption></figure>
+      <figure class="shot he"><img src="img/he/hits-count.webp" alt="מכות: ספירה יורדת" width="600" height="1169" loading="lazy"><figcaption>ספירה יורדת</figcaption></figure>
+      <figure class="shot en"><img src="img/en/hits-scan.webp" alt="Hits: scan the geophone" width="600" height="1169" loading="lazy"><figcaption>Scan the geophone</figcaption></figure>
+      <figure class="shot en"><img src="img/en/hits-count.webp" alt="Hits: countdown" width="600" height="1169" loading="lazy"><figcaption>Countdown</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="demo" id="demo" aria-label="Animation of a geophone station">
+    <svg class="rig" viewBox="0 0 330 200" role="img" aria-label="Hammer, plate, geophone and box">
+      <line x1="0" y1="182" x2="330" y2="182" class="ink2" stroke-width="2"/>
+      <!-- geophone with its QR tag -->
+      <line x1="22" y1="182" x2="22" y2="196" class="ink" stroke-width="3"/>
+      <rect x="14" y="170" width="16" height="12" rx="3" fill="#c98b2c"/>
+      <line x1="22" y1="170" x2="22" y2="150" class="ink2" stroke-width="2"/>
+      <g transform="translate(10,124)"><rect width="26" height="26" rx="3" fill="#ffffff" stroke="#999" stroke-width="1"/>
+        <rect x="3" y="3" width="8" height="8" fill="#111"/><rect x="15" y="3" width="8" height="8" fill="#111"/><rect x="3" y="15" width="8" height="8" fill="#111"/>
+        <rect x="15" y="15" width="3" height="3" fill="#111"/><rect x="20" y="18" width="3" height="5" fill="#111"/></g>
+      <!-- plate -->
+      <rect x="46" y="173" width="84" height="9" rx="2" fill="#7b8a84"/>
+      <!-- impact burst -->
+      <g id="burst" opacity="0" stroke="#f0b13e" stroke-width="3" stroke-linecap="round">
+        <line x1="60" y1="160" x2="50" y2="150"/><line x1="88" y1="156" x2="88" y2="142"/><line x1="116" y1="160" x2="126" y2="150"/></g>
+      <!-- cable plate -> box -->
+      <path d="M128 179 C 170 196, 210 196, 248 176" fill="none" stroke="#3b4641" stroke-width="3"/>
+      <!-- box -->
+      <rect x="240" y="146" width="74" height="36" rx="6" fill="#2a322e"/>
+      <line x1="300" y1="146" x2="300" y2="112" class="ink2" stroke-width="3"/><circle cx="300" cy="110" r="5" fill="#7b8a84"/>
+      <circle id="led" cx="256" cy="164" r="6" fill="#22c55e"/>
+      <text x="268" y="168" font-size="10" fill="#cfd8d3" font-family="IBM Plex Mono, monospace">BOX</text>
+      <!-- hammer: pivot at the hand -->
+      <g transform="translate(206,118)"><g id="hammer" transform="rotate(25)">
+        <line x1="0" y1="0" x2="-112" y2="0" stroke="#a0703c" stroke-width="6" stroke-linecap="round"/>
+        <rect x="-132" y="-15" width="26" height="30" rx="3" fill="#5d6b65"/>
+        <circle cx="0" cy="0" r="7" fill="#d9a06b"/>
+      </g></g>
+    </svg>
+    <div class="demo-side">
+      <div class="mock" aria-hidden="true">
+        <div class="view" id="v-scan">
+          <div class="cam"><div class="frame" id="frame"><svg class="qr" id="qr" viewBox="0 0 26 26"><rect width="26" height="26" fill="#fff"/><rect x="3" y="3" width="8" height="8" fill="#111"/><rect x="15" y="3" width="8" height="8" fill="#111"/><rect x="3" y="15" width="8" height="8" fill="#111"/><rect x="15" y="15" width="3" height="3" fill="#111"/><rect x="20" y="18" width="3" height="5" fill="#111"/></svg></div></div>
+          <div class="p"><div class="prompt" id="m-prompt"></div><div class="msg" id="m-done"></div><div class="btn" id="m-free"></div></div>
+          <div></div>
+        </div>
+        <div class="view" id="v-count" style="opacity:0">
+          <div class="count">
+            <div><div class="big" id="m-big">3</div><div class="left" id="m-left"></div></div>
+            <div class="side"><div><span id="m-l-geo"></span><b id="m-geo"></b></div><div><span id="m-l-prog"></span><b id="m-prog"></b></div><div><span id="m-l-total"></span><b id="m-total"></b></div></div>
+          </div>
+          <div class="p" style="padding-top:2px"><div class="msg" id="m-pos" style="min-height:0"></div></div>
+          <div class="rows" id="m-rows"></div>
+        </div>
+        <div class="ring" id="ring"></div>
+      </div>
+      <button type="button" id="demo-btn"></button>
+      <div class="demo-note"><span class="he">המחשה, לא צילום מסך</span><span class="en">Illustration, not a screenshot</span></div>
+    </div>
+  </div>
+
+  <ul class="tips he">
+    <li><b>מכה לא טובה?</b> לחיצה ארוכה עליה ברשימה ← מחק. הספירה עולה בחזרה, והכה שוב. הקשה על מכה מוסיפה הערה.</li>
+    <li><b>המצלמה לא קוראת את הקוד?</b> לחיצה ארוכה על <span class="ui">סרוק את הגיאופון…</span>, הקלד את המספר הסידורי ← <span class="ui">התחל מכות</span>.</li>
+    <li><b>סרקת גיאופון שגוי?</b> <span class="ui">גיאופון שגוי? סריקה מחדש</span> (לפני המכה הראשונה).</li>
+    <li><b>מכות שלא מול גיאופון:</b> <span class="ui">מכות ללא גיאופון</span>.</li>
+    <li>כל עוד הספירה לא הסתיימה אי אפשר לסרוק את הגיאופון הבא, ואותו גיאופון לא נסרק פעמיים ברצף.</li>
+  </ul>
+  <ul class="tips en">
+    <li><b>Bad hit?</b> Long-press it in the list → Delete. The countdown goes back up; hit again. Tap a hit to add a note.</li>
+    <li><b>Camera can't read the code?</b> Long-press <span class="ui">Scan the geophone…</span>, type the serial → <span class="ui">Start hits</span>.</li>
+    <li><b>Scanned the wrong geophone?</b> <span class="ui">Wrong geophone? Scan again</span> (before the first hit).</li>
+    <li><b>Hits away from a geophone:</b> <span class="ui">Hits without a geophone</span>.</li>
+    <li>The next geophone can't be scanned until the countdown ends, and the same geophone can't be scanned twice in a row.</li>
+  </ul>
+  <details class="more"><summary><span class="he">מה נחשב מכה, ואיך משנים את מספר המכות</span><span class="en">What counts as a hit, and changing the number</span></summary>
+    <div class="in he">
+      <p>• רק מכה עם זמן GNSS תקין נספרת. מכה בלי זמן מופיעה באדום עם "—", ולד החיווי במערכת מהבהב אדום מהר. היא לא נספרת: הכה שוב.</p>
+      <p>• אין צפצוף ואין הבהוב לבן = המכה לא נלכדה. בדוק שמסך הספירה מוצג ושהמערכת מחוברת.</p>
+      <p>• <span class="ui">הגדרות</span> ← <span class="ui">עבודה מול גיאופונים</span>: מכות לכל גיאופון (1–9), זום המצלמה בסריקה, או כיבוי התהליך למכות חופשיות (אז הלכידה נשלטת מלשונית מערכת).</p>
+      <p>• בקובץ, כל מכה רושמת את הגיאופון ואת מספר התחנה.</p>
+    </div>
+    <div class="in en">
+      <p>• Only a hit with a valid GNSS time counts. A hit without time shows in red with "—", and the box LED blinks red fast. It does not count: hit again.</p>
+      <p>• No beep and no white flash = the hit was not captured. Check that the countdown screen is showing and the box is connected.</p>
+      <p>• <span class="ui">Settings</span> → <span class="ui">Geophone workflow</span>: hits per geophone (1–9), camera zoom when scanning, or turn the workflow off for free hitting (capture is then switched on the System tab).</p>
+      <p>• In the file, each hit records its geophone and station number.</p>
+    </div>
+  </details>
+</section>
+
+<!-- 5. Files -->
+<section class="block" id="files">
+  <div class="step-head"><span class="num">5</span><h2><span class="he">שליחת הקבצים וסקר חדש</span><span class="en">Send the files, start a new survey</span></h2></div>
+  <div class="split">
+    <div class="col">
+      <ol class="steps he">
+        <li>לשונית <span class="ui">קבצים</span>: כל סקר הוא קובץ אחד. בחר את הקובץ.</li>
+        <li>הקש <span class="ui">שלח במייל</span>. Gmail נפתח עם הקובץ מצורף; לחץ שלח. <span class="ui">שתף…</span> שולח בכל אפליקציה אחרת.</li>
+        <li>בפרופיל העבודה: <span class="ui">העלאה לענן</span>, הקלד את שם האתר ← <span class="ui">העלה</span>. הקובץ עולה ל-S3 של אקסודיגו. בפעם הראשונה צריך להתחבר: <span class="ui">הגדרות</span> ← <span class="ui">חשבון Exodigo</span>.</li>
+        <li>לסקר חדש: <span class="ui">סשן חדש</span>. הקובץ הנוכחי נסגר ונפתח קובץ חדש, והמספור מתחיל מ-1.</li>
+      </ol>
+      <ol class="steps en">
+        <li><span class="ui">Files</span> tab: each survey is one file. Select the file.</li>
+        <li>Tap <span class="ui">Send by email</span>. Gmail opens with the file attached; press Send. <span class="ui">Share…</span> sends it with any other app.</li>
+        <li>In the work profile: <span class="ui">Upload to cloud</span>, type the site name → <span class="ui">Upload</span>. The file goes to Exodigo's S3. The first time, sign in: <span class="ui">Settings</span> → <span class="ui">Exodigo account</span>.</li>
+        <li>For a new survey: <span class="ui">New session</span>. The current file closes, a new one opens, and numbering restarts at 1.</li>
+      </ol>
+      <details class="more"><summary><span class="he">מה יש בקובץ</span><span class="en">What's in the file</span></summary>
+        <div class="in he">
+          <p>קובץ CSV (נפתח ב-Excel, כולל עברית): שורה לכל מכה עם זמן GNSS עד ננו-שנייה, מיקום המערכת ודיוקו, גיאופון, תחנה והערה; נקודות הגיאופונים ואיך כל מספר סידורי נקרא (QR, ברקוד או הקלדה); מיקום הטלפון להשוואה; וסוללה פעם בדקה.</p>
+          <p>כל המיקומים נשמרים ב-WGS84. רשתות RTK בישראל עובדות ב-IGD05/12, שרחוקה כ-0.7 מ' מ-WGS84, והאפליקציה ממירה בעצמה.</p>
+          <p>מכות שנמחקו נשארות בקובץ שבטלפון עם סימון "נמחק", ולא נכללות בעותק שנשלח. הקשה על קובץ ישן ממשיכה אותו; לחיצה ארוכה מוחקת.</p>
+        </div>
+        <div class="in en">
+          <p>A CSV file (opens in Excel, Hebrew included): one line per hit with GNSS time to the nanosecond, the box position and its accuracy, geophone, station and note; the geophone points and how each serial was read (QR, barcode or typed); the phone position for comparison; and the battery once a minute.</p>
+          <p>All positions are saved in WGS84. Israeli RTK networks use IGD05/12, about 0.7 m away from WGS84, and the app converts it.</p>
+          <p>Deleted hits stay in the phone's file marked deleted, and are left out of the copy that is sent. Tap an older file to continue it; long-press to delete it.</p>
+        </div>
+      </details>
+    </div>
+    <div class="shots">
+      <figure class="shot he"><img src="img/he/files.webp" alt="רשימת קבצים" width="600" height="1169" loading="lazy"><figcaption>קבצי הסקרים</figcaption></figure>
+      <figure class="shot he"><img src="img/he/files-send.webp" alt="שליחה וסשן חדש" width="600" height="1169" loading="lazy"><figcaption>שליחה וסשן חדש</figcaption></figure>
+      <figure class="shot en"><img src="img/en/files.webp" alt="File list" width="600" height="1169" loading="lazy"><figcaption>Survey files</figcaption></figure>
+      <figure class="shot en"><img src="img/en/files-send.webp" alt="Send and new session" width="600" height="1169" loading="lazy"><figcaption>Send and new session</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- LED -->
+<section class="block" id="led">
+  <h2><span class="he">לד החיווי במערכת</span><span class="en">The box status LED</span></h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th><span class="he">לד</span><span class="en">LED</span></th><th><span class="he">משמעות</span><span class="en">Meaning</span></th></tr></thead>
+    <tbody>
+      <tr><td><span class="led green"></span></td><td><span class="he"><b>ירוק קבוע:</b> RTK Fixed. מוכן לעבודה.</span><span class="en"><b>Steady green:</b> RTK Fixed. Ready to work.</span></td></tr>
+      <tr><td><span class="led green blink"></span></td><td><span class="he"><b>ירוק מהבהב:</b> יש לוויינים, עוד אין RTK Fixed.</span><span class="en"><b>Blinking green:</b> satellites in view, not RTK Fixed yet.</span></td></tr>
+      <tr><td><span class="led off"></span></td><td><span class="he"><b>אין ירוק:</b> אין לוויינים.</span><span class="en"><b>No green:</b> no satellites.</span></td></tr>
+      <tr><td><span class="led white flash"></span></td><td><span class="he"><b>הבהוב לבן:</b> מכה נלכדה עם זמן תקין.</span><span class="en"><b>White flash:</b> hit captured with a valid time.</span></td></tr>
+      <tr><td><span class="led red fast"></span></td><td><span class="he"><b>אדום מהבהב מהר (שנייה):</b> מכה בלי זמן תקין. לא נספרת.</span><span class="en"><b>Fast red blink (1 s):</b> hit without a valid time. It does not count.</span></td></tr>
+      <tr><td><span class="led red"></span></td><td><span class="he"><b>אדום קבוע:</b> תקלה במקלט ה-GNSS או במעגל המכה. הפעל מחדש את המערכת; אם נשאר, דווח.</span><span class="en"><b>Steady red:</b> a fault in the GNSS receiver or the hit circuit. Restart the box; if it stays, report it.</span></td></tr>
+      <tr><td><span class="led blue blink"></span></td><td><span class="he"><b>כחול מהבהב:</b> מכשיר מחובר לרשת ה-Wi-Fi של המערכת (האפליקציה עובדת בבלוטות׳ ולא מדליקה אותו).</span><span class="en"><b>Blinking blue:</b> a device is on the box's Wi-Fi network (the app uses Bluetooth and does not light it).</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="he" style="color:var(--ink-2)">יש לד חיווי אחד, והצבעים מתערבבים: ירוק וכחול מהבהבים יחד נראים טורקיז.</p>
+  <p class="en" style="color:var(--ink-2)">It is one LED and the colors mix: green and blue blinking together look cyan.</p>
+</section>
+
+<!-- Messages -->
+<section class="block" id="errors">
+  <h2><span class="he">הודעות ושגיאות</span><span class="en">Messages and errors</span></h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th><span class="he">הודעה</span><span class="en">Message</span></th><th><span class="he">מה לעשות</span><span class="en">What to do</span></th></tr></thead>
+    <tbody>
+      <tr><td><span class="banner c-bad"><span class="he">החיבור נותק — מתחבר מחדש…</span><span class="en">Connection lost — reconnecting…</span></span></td>
+        <td><span class="he">התקרב למערכת. האפליקציה מתחברת לבד, ומכות שנעשו בינתיים משוחזרות (עד 100 אחרונות).</span><span class="en">Move closer to the box. The app reconnects by itself, and hits made meanwhile are recovered (up to the last 100).</span></td></tr>
+      <tr><td><span class="banner c-warn"><span class="he">אבד RTK Fixed!</span><span class="en">RTK Fixed lost!</span></span></td>
+        <td><span class="he">חכה שיחזור. בדוק שמיים פתוחים ושה-NTRIP מחובר.</span><span class="en">Wait for it to return. Check for open sky and that NTRIP is connected.</span></td></tr>
+      <tr><td><span class="banner c-bad"><span class="he">סוללה חלשה!</span><span class="en">Battery low!</span></span></td>
+        <td><span class="he">החלף או טען את סוללת המערכת.</span><span class="en">Swap or charge the box battery.</span></td></tr>
+      <tr><td><span class="banner c-bad"><span class="he">לא ניתן לכתוב לקובץ</span><span class="en">Can’t write the session file</span></span></td>
+        <td><span class="he">פנה מקום בטלפון. הנתונים שמורים בזיכרון עד שאפשר לכתוב.</span><span class="en">Free up phone storage. The data is kept in memory until it can be written.</span></td></tr>
+      <tr><td><b><span class="he">המערכת לא מחוברת: מכות לא נלכדות</span><span class="en">Box not connected: hits are not captured</span></b></td>
+        <td><span class="he">חכה לחיבור לפני שמכים.</span><span class="en">Wait for the connection before hitting.</span></td></tr>
+      <tr><td><b><span class="he">מפעיל לכידת מכות…</span><span class="en">Turning on hit capture…</span></b></td>
+        <td><span class="he">חכה שנייה. אם נשאר, התנתק והתחבר מחדש.</span><span class="en">Wait a second. If it stays, disconnect and connect again.</span></td></tr>
+      <tr><td><b><span class="he">… הוא הגיאופון שהסתיים זה עתה</span><span class="en">… is the geophone you just finished</span></b></td>
+        <td><span class="he">סרוק את הגיאופון הבא.</span><span class="en">Scan the next geophone.</span></td></tr>
+      <tr><td><b><span class="he">המיקום לא נשמר: אין קליטת GNSS</span><span class="en">Position not saved: no GNSS fix</span></b></td>
+        <td><span class="he">המכות נשמרות כרגיל. מדוד את הגיאופון שוב בלשונית סריקה כשיש קליטה.</span><span class="en">The hits are saved as usual. Measure the geophone again in the Scan tab once there is a fix.</span></td></tr>
+      <tr><td><b><span class="he">הבלוטות׳ כבוי</span><span class="en">Bluetooth is off</span></b></td>
+        <td><span class="he">הדלק בלוטות׳.</span><span class="en">Turn Bluetooth on.</span></td></tr>
+    </tbody>
+  </table></div>
+  <details class="more"><summary><span class="he">שגיאות NTRIP</span><span class="en">NTRIP errors</span></summary>
+    <div class="in he">
+      <p>• <b>משתמש או סיסמה שגויים</b>, <b>נקודת העיגון לא נמצאה</b>: בדוק את הפרטים בהגדרות.</p>
+      <p>• <b>אין אינטרנט / שרת לא ידוע</b>, <b>אין תשובה מהשרת</b>: בדוק קליטה סלולרית בטלפון.</p>
+      <p>• <b>השרת דחה את החיבור</b>: ייתכן שהמשתמש מחובר בטלפון אחר. לכל טלפון צריך משתמש משלו.</p>
+      <p>• <b>הגדרות NTRIP חסרות</b>: מלא שרת, פורט ונקודת עיגון.</p>
+    </div>
+    <div class="in en">
+      <p>• <b>Wrong user or password</b>, <b>Mountpoint not found</b>: check the details in Settings.</p>
+      <p>• <b>No internet / unknown caster</b>, <b>No reply from the caster</b>: check the phone's mobile data.</p>
+      <p>• <b>Caster refused the connection</b>: the user may be logged in on another phone. Each phone needs its own user.</p>
+      <p>• <b>NTRIP settings incomplete</b>: fill the caster, port and mountpoint.</p>
+    </div>
+  </details>
+</section>
+
+<!-- Settings -->
+<section class="block" id="prefs">
+  <div class="split">
+    <div class="col">
+      <h2><span class="he">הגדרות</span><span class="en">Settings</span></h2>
+      <ul class="tips he">
+        <li><b>מדריך למשתמש:</b> פותח את המדריך הזה.</li>
+        <li><b>שפה וערכת נושא</b> (בהיר / כהה).</li>
+        <li><b>עבודה מול גיאופונים:</b> הפעלה, מכות לכל גיאופון (1–9, ברירת מחדל 3), זום מצלמה בסריקה (ברירת מחדל 50%).</li>
+        <li><b>משוב מכה:</b> צליל, סוג צליל, רטט, צלילי חיבור והתראות.</li>
+        <li><b>NTRIP:</b> פרטי שרת התיקונים ומערכת הקואורדינטות שלו (IGD05/12 ברשתות בישראל).</li>
+        <li><b>חשבון Exodigo והעלאה לענן:</b> התחברות (בפרופיל העבודה בלבד), דלי S3 ונתיב.</li>
+        <li><b>מייל ברירת מחדל</b> לשליחת הקבצים.</li>
+      </ul>
+      <ul class="tips en">
+        <li><b>User guide:</b> opens this guide.</li>
+        <li><b>Language and theme</b> (light / dark).</li>
+        <li><b>Geophone workflow:</b> on/off, hits per geophone (1–9, default 3), camera zoom when scanning (default 50%).</li>
+        <li><b>Hit feedback:</b> sound, tone, vibration, connection sounds and alerts.</li>
+        <li><b>NTRIP:</b> the corrections caster details and its coordinate frame (IGD05/12 for Israeli networks).</li>
+        <li><b>Exodigo account and cloud upload:</b> sign-in (work profile only), S3 bucket and path.</li>
+        <li><b>Default email</b> for sending the files.</li>
+      </ul>
+    </div>
+    <div class="shots">
+      <figure class="shot he"><img src="img/he/settings.webp" alt="הגדרות" width="600" height="1169" loading="lazy"><figcaption>הגדרות</figcaption></figure>
+      <figure class="shot en"><img src="img/en/settings.webp" alt="Settings" width="600" height="1169" loading="lazy"><figcaption>Settings</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer>
+  <span class="he">ExoTerra · Hammer Box v1 (קושחה v0.6.0) · נובמבר 2026</span>
+  <span class="en">ExoTerra · Hammer Box v1 (firmware v0.6.0) · November 2026</span>
+</footer>
+</div>
+</div>
+
+<script>
+(() => {
+  const app = document.getElementById('app');
+  const T = {
+    he: { prompt: 'סרוק את הגיאופון שהפלטה צמודה אליו', free: 'מכות ללא גיאופון', left: 'מכות נותרו מתוך 3',
+          geo: 'גיאופון', prog: 'התקדמות', total: 'סה״כ מכות', pos: 'המיקום נשמר · RTK Fixed · 1.4 cm',
+          done: g => `${g} הושלם · 3 מכות`, pause: 'השהה', play: 'הפעל' },
+    en: { prompt: 'Scan the geophone the plate is on', free: 'Hits without a geophone', left: 'hits left of 3',
+          geo: 'Geophone', prog: 'Progress', total: 'Total hits', pos: 'Position saved · RTK Fixed · 1.4 cm',
+          done: g => `${g} done · 3 hits`, pause: 'Pause', play: 'Play' },
+  };
+  let lang = 'he';
+  const $ = id => document.getElementById(id);
+
+  function setLang(l, push) {
+    lang = l === 'en' ? 'en' : 'he';
+    app.dataset.lang = lang;
+    app.dir = lang === 'he' ? 'rtl' : 'ltr';
+    app.lang = lang;
+    document.documentElement.lang = lang;
+    $('btn-he').setAttribute('aria-pressed', lang === 'he');
+    $('btn-en').setAttribute('aria-pressed', lang === 'en');
+    try { localStorage.setItem('guide-lang', lang); } catch (e) {}
+    if (push && location.hash.slice(1) !== lang && !['connect','gnss','line','hammer','files','led','errors','prefs'].includes(location.hash.slice(1))) {
+      try { history.replaceState(null, '', '#' + lang); } catch (e) {}
+    }
+    texts();
+  }
+  document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => setLang(b.dataset.set, true)));
+  let start = location.hash.slice(1);
+  if (start !== 'en' && start !== 'he') {
+    try { start = new URLSearchParams(location.search).get('lang'); } catch (e) { start = null; }
+  }
+  if (start !== 'en' && start !== 'he') {
+    try { start = localStorage.getItem('guide-lang'); } catch (e) { start = null; }
+  }
+  window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (h === 'en' || h === 'he') setLang(h, false); });
+
+  // ---- demo: one geophone station, looped ----
+  const st = { g: 412, idx: 12, total: 36, left: 3, rows: [], view: 'scan', done: '' };
+  const clock = { h: 10, m: 24, s: 5 };
+  const pad = n => String(n).padStart(2, '0');
+  const serial = () => 'GS-0' + st.g;
+  function texts() {
+    const t = T[lang];
+    $('m-prompt').textContent = t.prompt; $('m-free').textContent = t.free; $('m-left').textContent = t.left;
+    $('m-l-geo').textContent = t.geo; $('m-l-prog').textContent = t.prog; $('m-l-total').textContent = t.total;
+    $('m-pos').textContent = st.view === 'count' ? t.pos : '';
+    $('m-done').textContent = st.done ? t.done(st.done) : '';
+    $('demo-btn').textContent = running ? t.pause : t.play;
+  }
+  function render() {
+    $('v-scan').style.opacity = st.view === 'scan' ? 1 : 0;
+    $('v-count').style.opacity = st.view === 'count' ? 1 : 0;
+    $('m-big').textContent = st.left;
+    $('m-geo').textContent = serial(); $('m-prog').textContent = st.idx + ' / 104'; $('m-total').textContent = st.total;
+    const rows = $('m-rows'); rows.innerHTML = '';
+    st.rows.slice(-5).reverse().forEach(r => {
+      const d = document.createElement('div'); d.className = 'row';
+      d.innerHTML = `<b>${r.n}</b><span>${r.t}</span><span>${r.g}</span>`; rows.appendChild(d);
+    });
+    texts();
+  }
+  let angle = 25, raf = 0;
+  function swing(to, ms) {
+    cancelAnimationFrame(raf);
+    const from = angle, t0 = performance.now();
+    const step = now => {
+      const k = Math.min(1, (now - t0) / ms);
+      angle = from + (to - from) * (ms < 200 ? k * k : 1 - (1 - k) * (1 - k));
+      $('hammer').setAttribute('transform', `rotate(${angle.toFixed(1)})`);
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  }
+  function strike() {
+    swing(-14, 120);
+    setTimeout(() => {
+      $('burst').setAttribute('opacity', 1); $('led').setAttribute('fill', '#ffffff');
+      setTimeout(() => { $('burst').setAttribute('opacity', 0); $('led').setAttribute('fill', '#22c55e'); }, 300);
+      clock.s += 3; if (clock.s >= 60) { clock.s -= 60; clock.m++; }
+      st.left--; st.total++;
+      st.rows.push({ n: st.total, t: `${pad(clock.h)}:${pad(clock.m)}:${pad(clock.s)}`, g: serial() });
+      render();
+      const big = $('m-big'); big.classList.add('hit'); setTimeout(() => big.classList.remove('hit'), 160);
+    }, 120);
+  }
+  const timeline = [
+    [0, () => { st.view = 'scan'; $('qr').classList.remove('on'); $('frame').classList.remove('ok'); render(); }],
+    [700, () => $('qr').classList.add('on')],
+    [1500, () => $('frame').classList.add('ok')],
+    [2100, () => { st.view = 'count'; st.left = 3; st.done = ''; render(); }],
+    [2700, () => swing(25, 450)], [3300, strike],
+    [3900, () => swing(25, 450)], [4600, strike],
+    [5200, () => swing(25, 450)], [5900, strike],
+    [6300, () => { const r = $('ring'); r.classList.remove('go'); void r.offsetWidth; r.classList.add('go'); }],
+    [7100, () => { st.view = 'scan'; st.done = serial(); $('qr').classList.remove('on'); $('frame').classList.remove('ok'); render(); }],
+    [9300, () => { st.g++; st.idx++; }],
+  ];
+  const LOOP = 9400;
+  let running = false, timers = [], loopTimer = 0;
+  function runLoop() {
+    timers = timeline.map(([t, f]) => setTimeout(f, t));
+    loopTimer = setTimeout(runLoop, LOOP);
+  }
+  function play() { if (running) return; running = true; runLoop(); texts(); }
+  function pause() { running = false; timers.forEach(clearTimeout); clearTimeout(loopTimer); texts(); }
+  $('demo-btn').addEventListener('click', () => (running ? pause() : play()));
+
+  setLang(start === 'en' ? 'en' : start === 'he' ? 'he' : (navigator.language || '').startsWith('he') ? 'he' : 'he', false);
+  render();
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce) play();
+})();
+</script>
+</body>
+</html>
