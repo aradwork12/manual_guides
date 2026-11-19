@@ -84,6 +84,15 @@ tr:last-child td { border-bottom: 0; }
 .c-bad { background: var(--bad); } .c-warn { background: var(--warn); } .c-good { background: var(--good); } .c-neutral { background: var(--neutral); }
 .banner { display: inline-block; padding: 5px 12px; border-radius: 6px; font-weight: 700; font-size: 15px; color: var(--on-status); }
 .acc { font-family: var(--f-mono); font-size: 15px; white-space: nowrap; }
+/* Fix table on a phone: state + accuracy on one line, "what to do" on the full width below
+   (three columns side by side leave the last one a word wide). */
+@media (max-width: 560px) {
+  table.fix-table thead { display: none; }
+  table.fix-table tr { display: grid; grid-template-columns: auto 1fr; align-items: center; }
+  table.fix-table td { border-bottom: 0; }
+  table.fix-table td:nth-child(3) { grid-column: 1 / -1; padding-top: 0; border-bottom: 1px solid var(--line); }
+  table.fix-table tr:last-child td:nth-child(3) { border-bottom: 0; }
+}
 
 /* LED swatches: the box's single RGB LED */
 .led { display: inline-block; width: 22px; height: 22px; border-radius: 50%; vertical-align: middle; border: 2px solid var(--line); }
@@ -216,7 +225,7 @@ footer { color: var(--ink-2); font-size: 14px; padding-block: 8px 40px; }
     <div class="col">
       <p class="he">בלשונית <span class="ui">מערכת</span>, כרטיס <b>GNSS</b> (בצילום המסך למעלה). עובדים ב-<span class="chip c-good">RTK Fixed</span>: המיקום מדויק לכ-2 ס״מ.</p>
       <p class="en">On the <span class="ui">System</span> tab, the <b>GNSS</b> card (in the screenshot above). Work at <span class="chip c-good">RTK Fixed</span>: positions are then accurate to about 2 cm.</p>
-      <div class="tablewrap"><table>
+      <div class="tablewrap"><table class="fix-table">
         <thead><tr><th><span class="he">מצב</span><span class="en">State</span></th><th><span class="he">דיוק</span><span class="en">Accuracy</span></th><th><span class="he">מה לעשות</span><span class="en">What to do</span></th></tr></thead>
         <tbody>
           <tr><td><span class="chip c-bad"><span class="he">אין קליטה</span><span class="en">No fix</span></span></td><td class="acc">—</td>
